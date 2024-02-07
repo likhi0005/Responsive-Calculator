@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculator</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: white;
+    }
+    .calculator {
+      max-width: 350px;
+      margin: 50px auto;
+      background-color: black;
+      padding: 20px;
+      border-radius: 10px;
+      border: 2px solid white;
+    }
+    .calculator h2 {
+      margin-bottom: 20px;
+      text-align: center;
+      color: white;
+    }
+    #display {
+      font-size: 24px;
+      text-align: left;
+      padding: 10px;
+      border: 1px solid #ced4da;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .btn {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    
+  </style>
+</head>
+<body>
+<audio id="keySound">
+  <source src="mixkit-single-key-type-2533.wav" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+<audio id="operatorSound">
+  <source src="beep-6-96243.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+<div class="container">
+  <div class="calculator">
+    <h2>Calculator</h2>
+    <input type="text" class="form-control" id="display" readonly>
+    <div class="row">
+      <div class="col"><button type="button" class="btn btn-danger btn-block" onclick="clearDisplay()">C</button></div>
+      <div class="col"><button type="button" class="btn btn-info btn-block" onclick="appendToDisplay('.')">.</button>
+      </div>
+      <div class="col"><button type="button" class="btn btn-warning btn-block" onclick="appendToDisplay('+')">+</button></div>
+    </div>
+    <div class="row">
+      <div class="col"><button type="button" class="btn btn-secondary btn-block" onclick="appendToDisplay('8')">8</button></div>
+      <div class="col"><button type="button" class="btn btn-secondary btn-block" onclick="appendToDisplay('9')">9</button></div>
+      <div class="col"><button type="button" class="btn btn-warning btn-block" onclick="appendToDisplay('-')">-</button></div>
+    </div>
+    <div class="row">
+      <div class="col"><button type="button" class="btn btn-secondary btn-block" onclick="appendToDisplay('6')">6</button></div>
+      <div class="col"><button type="button" class="btn btn-secondary btn-block" onclick="appendToDisplay('7')">7</button></div>
+      <div class="col"><button type="button" class="btn btn-warning btn-block" onclick="appendToDisplay('/')">/</button></div>
+    </div>
+    <div class="row">
+      <div class="col"><button type="button" class="btn btn-secondary btn-block" onclick="appendToDisplay('4')">4</button></div>
+      <div class="col"><button type="button" class="btn btn-secondary btn-block" onclick="appendToDisplay('5')">5</button></div>
+      <div class="col"><button type="button" class="btn btn-warning btn-block" onclick="appendToDisplay('*')">*</button></div>
+    </div>
+    <div class="row">
+      <div class="col"><button type="button" class="btn btn-secondary btn-block" onclick="appendToDisplay('2')">2</button></div>
+      <div class="col"><button type="button" class="btn btn-secondary btn-block" onclick="appendToDisplay('3')">3</button></div>
+      <div class="col"><button type="button" class="btn btn-info btn-block" onclick="backspace()">←</button></div>
+    </div>
+    <div class="row">
+      <div class="col"><button type="button" class="btn btn-secondary btn-block" onclick="appendToDisplay('0')">0</button>
+      </div>
+      <div class="col"><button type="button" class="btn btn-secondary btn-block" onclick="appendToDisplay('1')">1</button></div>
+      <div class="col"><button type="button" class="btn btn-success btn-block" onclick="calculate()">=</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function appendToDisplay(value) {
+  document.getElementById('display').value += value;
+  playKeySound(); //play sound
+}
+
+function clearDisplay() {
+  document.getElementById('display').value = '';
+  playoperatorsound();
+}
+
+function calculate() {
+  try {
+    let expression = document.getElementById('display').value;
+    let result = eval(expression);
+    
+    if (!isFinite(result)) {
+      throw "Cannot divide by Zero.";
+    }
+    
+    document.getElementById('display').value = result;
+    playoperatorsound(); // Play sound for successful calculation
+  } catch (error) 
+  {
+    if (error === "Cannot divide by Zero.") 
+    {
+      document.getElementById('display').value = "Cannot divide by zero.";
+    }
+    else {
+      document.getElementById('display').value = 'Error';
+    }
+    playoperatorsound(); // Play sound for error
+  }
+}
+
+
+function playKeySound() {
+  var audio = document.getElementById('keySound');
+  audio.currentTime = 0;
+  document.getElementById('keySound').play();
+}
+
+function backspace() {
+  let currentValue = document.getElementById('display').value;
+  document.getElementById('display').value = currentValue.slice(0, -1);
+  playoperatorsound();
+}
+
+function playoperatorsound()
+{
+  var audio2 = document.getElementById('operatorSound');
+  audio2.currentTime = 0;
+  document.getElementById('operatorSound').play();
+}
+
+document.addEventListener('keydown', function(event) {
+  const key = event.key;
+  if (key >= '0' && key <= '9') {
+    appendToDisplay(key);
+    playKeySound(); 
+  } else if (key === '.') {
+    appendToDisplay('.');
+    playKeySound(); 
+  } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+    playKeySound(); 
+    appendToDisplay(key);
+  } else if (key === 'Enter') {
+    playoperatorsound();
+    calculate();
+  } else if (key === 'Backspace') {
+    playoperatorsound();
+    backspace();
+  } else if (key === 'Escape') {
+    playoperatorsound();
+    clearDisplay();
+  }
+});
+</script>
+</body>
+</html>
